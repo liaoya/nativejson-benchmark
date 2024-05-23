@@ -6,12 +6,14 @@ COPY . /nativejson-benchmark
 WORKDIR /nativejson-benchmark
 ENV PATH $PATH:/nativejson-benchmark/build
 
+ARG GIT_PROXY
 RUN buildDeps='build-essential gcc-multilib g++-multilib git-core curl ca-certificates php8.2-cli libboost-all-dev'; \
 	set -x \
 	&& sed -i -e "s%http://deb.debian.org%http://mirrors.ustc.edu.cn%g" -e "s%http://security.debian.org%http://mirrors.ustc.edu.cn%g" /etc/apt/sources.list.d/debian.sources \
 	&& apt-get update && apt-get install --no-install-recommends -y $buildDeps \
 	&& cd /nativejson-benchmark \
-	&& if [ -n ${GIT_PROXY} ]; then git config --global url."${GIT_PROXY}/".insteadOf https://; fi \\
+	&& if [ -n ${GIT_PROXY} ]; then git config --global url."${GIT_PROXY}/".insteadOf https://; fi \
+	&& cat $HOME/.gitconfig \
 	&& git submodule update --init \
 	&& git -C thirdparty/boost submodule update --init \
 	&& cd build \
